@@ -16,7 +16,7 @@
 #
 # This is a Dockerfile for the radanalyticsio/openshift-spark:2.4-latest image.
 
-FROM centos:centos7
+FROM registry.access.redhat.com/ubi7/ubi-minimal
 
 USER root
 
@@ -32,6 +32,10 @@ RUN yum install -y java-1.8.0-openjdk wget numpy \
 COPY \
     spark-2.4.5-bin-hadoop2.7.tgz \
     /tmp/artifacts/
+
+# Download the artifact if the local one is of size 0
+RUN [ "`ls -s /tmp/artifacts/spark-2.4.5-bin-hadoop2.7.tgz | awk '{print $1}'`x" == "0x" ] &&\
+    curl -o /tmp/artifacts/spark-2.4.5-bin-hadoop2.7.tgz https://archive.apache.org/dist/spark/spark-2.4.5/spark-2.4.5-bin-hadoop2.7.tgz
 
 
 # Environment variables

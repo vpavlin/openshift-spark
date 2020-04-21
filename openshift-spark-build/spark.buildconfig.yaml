@@ -1,0 +1,50 @@
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  labels:
+    build: openshift-spark
+  name: openshift-spark
+spec:
+  lookupPolicy:
+    local: true
+
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  labels:
+    build: openshift-spark
+  name: openshift-spark
+spec:
+  failedBuildsHistoryLimit: 5
+  nodeSelector: null
+  output:
+    to:
+      kind: ImageStreamTag
+      name: openshift-spark:2.4.5-hadoop2.7
+  postCommit: {}
+  resources: {}
+  runPolicy: Serial
+  source:
+    git:
+      uri: https://github.com/vpavlin/openshift-spark.git
+    contextDir: openshift-spark-build
+    type: Git
+  strategy:
+    dockerStrategy:
+      from:
+        kind: DockerImage
+        name: registry.access.redhat.com/ubi7/ubi
+    type: Docker
+  successfulBuildsHistoryLimit: 5
+  triggers:
+  - github:
+      secret: -z6NJg1P6H1zVLpIq6rx
+    type: GitHub
+  - generic:
+      secret: CVGyl4gxVcyYoB8Znsyh
+    type: Generic
+  - type: ConfigChange
+  - type: ImageChange
+status:
